@@ -1,0 +1,51 @@
+version: '1'
+
+x-database-variables: &database-variables
+  spring.liquibase.enabled: 'true'
+  spring.application.name: 'java-backend'
+  spring.datasource.username: postgres_user
+  spring.datasource.password: postgres_password
+  spring.datasource.drive-class-name: org.postgresql.Driver
+  #spring.datasource.url: jdbc:postgresql://host.docker.internal:5432/postgres_database
+  spring.datasource.url: jdbc:postgresql://database:5432/postgres_database
+  spring.jpa.properties.hibernate.dialect: org.hibernate.dialect.PostgreSQL94Dialect
+  spring.jpa.hibernate.ddl-auto: none
+  spring.jpa.generate-ddl: 'true'
+  spring.liquibase.change-log: classpath:/db/changelog/db.changelog-master.xml
+
+
+services:
+  app:
+    image: 'docker-spriing-boot-postgres:latest'
+    build:
+      context: .
+    container_name: app
+    ports:
+      - 8080:8080
+    depends_on:
+      - database
+    environment:
+      <<: *database-variables
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 3s
+        max_attempts: 3
+    #- SPRING_DATASOURCE_URL=jdbc:postgresql://localhost:5432/postgres_database
+
+  database:
+    image: "postgres:latest" # use latest official postgres version
+    container_name: postgres_container
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_USER=postgres_user
+      - POSTGRES_PASSWORD=postgres_password
+      - POSTGRES_DB=postgres_database
+    #env_file:
+    # - database.env # configure postgres
+    volumes:
+      - ./database-data:/var/lib/postgresql/data/ # persist data even if container shuts down
+
+volumes:
+  database-data: # named volumes can be managed easier using docker-compose
