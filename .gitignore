@@ -10,6 +10,12 @@
 # Mobile Tools for Java (J2ME)
 .mtj.tmp/
 
+portfolio-backend-java/
+portforlio-frontend-react/
+docker/java-docker/database-data
+
+.idea
+
 # Package Files #
 *.jar
 *.war
