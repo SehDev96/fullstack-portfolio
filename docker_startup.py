@@ -45,13 +45,14 @@ def get_preferred_techstack():
 
 
 def build_spring_application(result):
-    dir = root_dir + "/" + tech_stack(result)
-    os.system("mvn -f " + dir + "/pom.xml clean package -DskipTests")
+    directory = root_dir + "/" + tech_stack(result)
+    os.system("mvn -f " + directory + "/pom.xml clean package -DskipTests")
     java_docker_dir = root_dir + "/docker/java-docker/java-backend.jar"
-    jar_file_dir = dir + "/target/java-backend-0.0.1-SNAPSHOT.jar"
+    jar_file_dir = directory + "/target/java-backend-0.0.1-SNAPSHOT.jar"
     print("Copying jar file...")
     os.system("cp " + jar_file_dir + " " + java_docker_dir)
     print("Done copying")
+
 
 def get_latest_code():
     print("Getting latest code changes")
@@ -60,18 +61,31 @@ def get_latest_code():
     os.system("git pull")
     print("Fetched latest code change")
 
+
+def react_code_exists():
+    return os.path.exists("portfolio-frontend-react")
+
+
+def java_code_exists():
+    return os.path.exists("portfolio-backend-java")
+
+
 def get_source_code(tech_stack_number):
-    if(tech_stack_number == 1):
+    if tech_stack_number == 1:
         # React + Java
-        os.system(git_clone_cmd + java_backend)
-        os.system(git_clone_cmd + react_frontend)
+        if not java_code_exists():
+            os.system(git_clone_cmd + java_backend)
+            print("Java directory already exist!")
+        if not react_code_exists():
+            os.system(git_clone_cmd + react_frontend)
+            print("React directory already exists")
 
 
 def main():
     user_preference = get_preferred_techstack()
     get_source_code(user_preference)
     build_spring_application(user_preference)
-    os.chdir(root_dir+"/docker/java-docker")
+    os.chdir(root_dir + "/docker/java-docker")
     if is_docker_daemon_running():
         cmd = "docker-compose up -d"
         os.system(cmd)
