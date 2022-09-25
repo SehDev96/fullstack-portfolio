@@ -11,8 +11,9 @@
 .mtj.tmp/
 
 portfolio-backend-java/
-portforlio-frontend-react/
+portfolio-frontend-react/
 docker/java-docker/database-data
+database-data/
 
 .idea
 
