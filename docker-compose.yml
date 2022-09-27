@@ -21,8 +21,10 @@ services:
     build:
       context: ./portfolio-frontend-react 
       dockerfile: Dockerfile
+      args: 
+        REACT_APP_API_BASE_URL: http://localhost:8080
     ports:
-      - 8080:80
+      - 3000:3000
 
   app:
     image: 'docker-spriing-boot-postgres:latest'
@@ -31,7 +33,7 @@ services:
       dockerfile: Dockerfile
     container_name: app
     ports:
-      - 5000:8080
+      - 8080:8080
     depends_on:
       - database
     environment:
