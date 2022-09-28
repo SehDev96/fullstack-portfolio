@@ -6,6 +6,7 @@ __version__ = "1.0"
 
 import os
 import subprocess
+import platform
 
 root_dir = os.getcwd()
 portfolio_frontend_react = "portfolio-frontend-react"
@@ -27,11 +28,19 @@ def tech_stack(user_input):
 
 def is_docker_daemon_running():
     command = "docker ps -q"
-    output = subprocess.getoutput(command)
-    if not output:
-        return True
-    else:
-        return False
+    if platform.system() == 'Darwin':
+        output = subprocess.getoutput(command)
+        if not output:
+            return True
+        else:
+            return False
+    elif platform.system() == 'Linux':
+        output = subprocess.getoutput("systemctl is-active docker")
+        if output == 'active':
+            return True
+        else:
+            return False
+    return False
 
 
 def get_first_word(sentence):
