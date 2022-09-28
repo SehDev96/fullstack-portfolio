@@ -8,8 +8,11 @@ import os
 import subprocess
 
 root_dir = os.getcwd()
+portfolio_frontend_react = "portfolio-frontend-react"
+portfolio_backend_java = "portfolio-backend-java"
 
 git_clone_cmd = "git clone "
+
 java_backend = "https://github.com/SehDev96/portfolio-backend-java.git"
 react_frontend = "https://github.com/SehDev96/portfolio-frontend-react.git"
 
@@ -37,60 +40,66 @@ def get_first_word(sentence):
 
 
 def get_preferred_techstack():
-    stack = input("Please choose the preferred tech stack: \n"
-                  "1. React + Java \n"
-                  "2. React + Python\n"
-                  "Your choice: ")
-    return int(stack)
+    user_input = None
+    while user_input is None:
+        stack = input("Please choose the preferred tech stack: \n"
+                      "1. React + Java \n"
+                      "2. React + Python (Not Available yet) \n"
+                      "Your choice: ")
+        try:
+            user_input = int(stack)
+            if user_input == 1:
+                return user_input
+            else:
+                print("Invalid number")
+                user_input = None
+
+        except ValueError:
+            print("{input_value} is not a number, please enter a number only.".format(input_value=stack))
+
+    return user_input
 
 
-def build_spring_application(result):
-    directory = root_dir + "/" + tech_stack(result)
-    os.system("mvn -f " + directory + "/pom.xml clean package -DskipTests")
-    java_docker_dir = root_dir + "/docker/java-docker/java-backend.jar"
-    jar_file_dir = directory + "/target/java-backend-0.0.1-SNAPSHOT.jar"
-    print("Copying jar file...")
-    os.system("cp " + jar_file_dir + " " + java_docker_dir)
-    print("Done copying")
-
-
-def get_latest_code():
-    print("Getting latest code changes")
-    os.system("git checkout main")
-    print("Checkedout to main")
-    os.system("git pull")
-    print("Fetched latest code change")
-
-
-def react_code_exists():
-    return os.path.exists("portfolio-frontend-react")
-
-
-def java_code_exists():
-    return os.path.exists("portfolio-backend-java")
+def code_exists(folder):
+    return os.path.exists(root_dir + '/' + folder)
 
 
 def get_source_code(tech_stack_number):
     if tech_stack_number == 1:
         # React + Java
-        if not java_code_exists():
+        if not code_exists(portfolio_backend_java):
             os.system(git_clone_cmd + java_backend)
+        else:
             print("Java directory already exist!")
-        if not react_code_exists():
+            os.chdir(root_dir + '/' + portfolio_backend_java)
+            print("Pulling the latest code")
+            os.system("git pull")
+            os.chdir(root_dir)
+
+        if not code_exists(portfolio_frontend_react):
+            print("Code does not exists")
             os.system(git_clone_cmd + react_frontend)
+        else:
             print("React directory already exists")
+            os.chdir(root_dir + '/' + portfolio_frontend_react)
+            print("Pulling the latest code")
+            os.system("git pull")
+            os.chdir(root_dir)
+
+
+def run_docker_compose(preference):
+    if preference == 1:
+        os.system("docker-compose -f java-react-docker-compose.yml up -d")
 
 
 def main():
     user_preference = get_preferred_techstack()
     get_source_code(user_preference)
-    build_spring_application(user_preference)
-    os.chdir(root_dir + "/docker/java-docker")
     if is_docker_daemon_running():
-        cmd = "docker-compose up -d"
-        os.system(cmd)
+        run_docker_compose(user_preference)
+        print("Docker containers up and running")
     else:
-        print('Docker daemon is not running. Please start your docker daemon')
+        print('Docker daemon is not running. Please start docker daemon')
 
 
 if __name__ == "__main__":
