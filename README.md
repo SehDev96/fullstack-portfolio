@@ -26,6 +26,6 @@ This is a repository for web application with has authentication functionalities
 ### Run application using docker-compose: 
 1. $ git clone https://github.com/SehDev96/fullstack-portfolio.git
 2. $ cd fullstack-portfolio 
-3. $ git clone https://github.com/SehDev96/fullstack-portfolio.git
-4. $ git clone https://github.com/SehDev96/fullstack-portfolio.git
+3. $ git clone https://github.com/SehDev96/portfolio-frontend-react.git
+4. $ git clone https://github.com/SehDev96/portfolio-backend-java.git
 5. $ docker-compose -f java-react-docker-compose.yml up -d 
