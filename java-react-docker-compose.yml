@@ -16,8 +16,8 @@ x-database-variables: &database-variables
 
 
 services:
-  ui: 
-    container_name: app_ui 
+  react_frontend: 
+    container_name: react_frontend 
     build:
       context: ./portfolio-frontend-react 
       dockerfile: Dockerfile
@@ -26,12 +26,12 @@ services:
     ports:
       - 3000:3000
 
-  app:
+  java_backend:
     image: 'docker-spriing-boot-postgres:latest'
     build:
       context: ./portfolio-backend-java
       dockerfile: Dockerfile
-    container_name: app
+    container_name: java_backend
     ports:
       - 8080:8080
     depends_on:
